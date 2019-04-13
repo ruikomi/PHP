@@ -2,7 +2,7 @@
 
     include "inc/head.php";
     include "inc/header.php";
-    require "inc/funcoes.php";
+    require "req/funcoesValidacao.php";
 
     // variáveis
     $nome = $_REQUEST["nomeCompleto"]; // o nome dentro do [] foram defiinidos na linha 105 no comando name
@@ -12,9 +12,7 @@
     $cvv = $_REQUEST["cvv"]; // o nome dentro do [] foram defiinidos na linha 121 no comando name
     $nomeCurso = $_REQUEST["nomeCurso"];
     $precoCurso = $_REQUEST["precoCurso"];
-    $erros = [];
-
-    
+    $erros = [];    
 
     validarCompra($nome, $cpf, $nroCartao, $validade, $cvv);
 ?>
