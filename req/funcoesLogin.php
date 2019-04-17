@@ -17,4 +17,24 @@
 
         return $cadastrou; // retorna true/false
     }
+
+
+
+    function logarUsuario($email, $senha) {
+        global $nomeArquivo;
+        $logado = false;
+        $usuariosJson = file_get_contents($nomeArquivo); // traz conteúdo do arquivo usuarios.json
+
+        $arrayUsuarios = json_decode($usuariosJson, true); // transforma arquico json em array associativo
+
+        // verifica se usuário existe no arquivo usuarios.json
+        foreach($arrayUsuarios["usuarios"] as $chave => $valor) {
+            // verifica se email/senha digitados é igual ao email/senha do json
+            if ($valor["email"] == $email && password_verify($senha,$valor["senha"])) {
+                $logado = true;
+                break; // quando encontrar o usuário, ele para
+            }
+        }
+        return $logado;
+    }
 ?>

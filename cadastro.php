@@ -7,14 +7,29 @@
         $email = $_REQUEST["email"];
         $senha = $_REQUEST["senha"];
         $confirmarSenha = $_REQUEST["ConfirmarSenha"];
+        // teste 1
+        /*$cadastro = md5($senha);
+        $login = md5($senha);
+        echo $cadastro . "<br/>";
+        echo $login;
+        exit;*/
+
+        // teste 2
+        /*$hash = password_hash($senha,PASSWORD_DEFAULT);
+        echo $hash;
+        exit;*/
+
         //echo $nome . " " . $email . " " . $senha . " " . $confirmarSenha;
         //exit;
         
         if ($senha == $confirmarSenha) {
+            // criptografa senha
+            $senhaCrip = password_hash($senha,PASSWORD_DEFAULT);
+            // cria novo usuário
             $novoUsuario = [
                 "nome" => $nome,
                 "email" => $email,
-                "senha" => $senha
+                "senha" => $senhaCrip
             ];
             // cadastra usuário no json
             $cadastrou = cadastrarUsuario($novoUsuario);
