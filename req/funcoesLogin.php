@@ -1,40 +1,53 @@
 
 <?php
-    $nomeArquivo = "usuarios.json"; // define o nome do arquivo
 
     function cadastrarUsuario($usuario) {
-        global $nomeArquivo; // define variável global dentro da função
+        try {
+            global $conexao;
+            $query = $conexao->prepare("INSERT INTO usuarios(nome, email, senha, tipo_usuario_fk) VALUES (:nome, :email, :senha, 3)");
+    
+            $query->execute([
+                ':nome' => $usuario['nome'],
+                ':email' => $usuario['email'],
+                ':senha' => $usuario['senha']
+            ]);
 
-        $usuariosJson = file_get_contents($nomeArquivo); // traz conteúdo do arquivo usuarios.json
+            $usuario = $query->fetchAll(PDO::FETCH_ASSOC);
+            
+            $connection = null;
+    
+        } catch(PDOException $Exception) {
+            echo $Exception->getMessage();
+        }
 
-        $arrayUsuarios = json_decode($usuariosJson,true); // transforma arquivo json em array associativo
-        
-        array_push($arrayUsuarios["usuarios"],$usuario); // inclui novos usuarios no array associativo; "usuarios" foi definidos no arquivo usuarios.json
-
-        $usuarioJson = json_encode($arrayUsuarios); // transforma array associativo em arquivo json
-
-        $cadastrou = file_put_contents($nomeArquivo,$usuarioJson); // insere dados json para arquivo "usuarios.json"
-
-        return $cadastrou; // retorna true/false
+        return $usuario;
     }
 
 
 
     function logarUsuario($email, $senha) {
-        global $nomeArquivo;
-        $nomeLogado = "";
-        $usuariosJson = file_get_contents($nomeArquivo); // traz conteúdo do arquivo usuarios.json
+        try {
+            global $conexao;
 
-        $arrayUsuarios = json_decode($usuariosJson, true); // transforma arquico json em array associativo
+            $query = $conexao->prepare("SELECT * FROM usuarios WHERE email = :email");
+            $query->execute([
+                ':email' => $email
+            ]);
 
-        // verifica se usuário existe no arquivo usuarios.json
-        foreach($arrayUsuarios["usuarios"] as $chave => $valor) {
-            // verifica se email/senha digitados é igual ao email/senha do json
-            if ($valor["email"] == $email && password_verify($senha,$valor["senha"])) {
-                $nomeLogado = $valor["nome"];
-                break; // quando encontrar o usuário, ele para
-            }
+            $usuario = $query->fetch(PDO::FETCH_ASSOC);
+
+            if($usuario['email'] == $email && password_verify($senha, $usuario["senha"])) {
+                $infoLogado = [
+                    "nomeUsuario" => $usuario["nome"],
+                    "tipoUsuario" => $usuario["tipo_usuario_fk"]
+                ];
+                var_dump($infoLogado);
+            };
+
+        } catch(PDOException $Exception) {
+            echo $Exception->getMessage();
         }
-        return $nomeLogado;
+
+        return $infoLogado;
     }
 ?>
